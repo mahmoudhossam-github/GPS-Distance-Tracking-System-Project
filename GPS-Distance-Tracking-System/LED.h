@@ -1,5 +1,5 @@
-#ifndef LED.h
-#define LED.h
+#ifndef _LED_H_
+#define _LED_H_
 
 #define LED_MASK 0xE
 #define Red 0x02

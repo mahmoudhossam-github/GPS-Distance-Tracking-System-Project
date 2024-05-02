@@ -1,5 +1,5 @@
-#ifndef GPIO.h
-#define GPIO.h
+#ifndef _GPIO_H_
+#define _GPIO_H_
 
 #define SW_ALL_MASK 0x11
 #define SW2_MASK  0x01
