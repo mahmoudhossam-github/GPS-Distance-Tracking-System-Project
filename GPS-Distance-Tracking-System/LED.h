@@ -14,4 +14,8 @@ void turn_Off_LED(unsigned char data); // Turns off Red, Blue or Green LED
 
 unsigned char getData_LED(void); // Read current LED status (PF321 - G B R)
 
+void SysTick_Init(void);  // Timer Initialization
+ 
+void SysTick_Delay10ms(void);  // 10ms Delay (Clock = 16 MHz)
+
 #endif
