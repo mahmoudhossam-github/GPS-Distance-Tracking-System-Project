@@ -21,22 +21,15 @@ void UART_Init_pc(void) // funtion for init uart0
 	GPIO_PORTA_AMSEL_R &= ~0X03; // disable analog on PA0,PA1
 }
 
+char UART_InChar_gps() // read uart data
+{
+	while ((UART1_FR_R & UART_FR_RXFE) != 0); // while fifo is empty>>dont read
+	return (char)UART1_DR_R;  // we just want the 8 bits
+}
 
-
-void UART_Init_gps(void) // funtion for init uart1
+void UART_OutChar_gps(char data) // write uart data
 {
 
-	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1; // activate uart 1 //? port B
-	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // activate port B
-
-	UART1_CTL_R &= ~UART_CTL_UARTEN; // disable uart1
-
-	UART1_IBRD_R = 0X208;										   // IBRD=INT(80000000/(9600*16)) =520 //todo check
-	UART1_FBRD_R = 0X35;										   // FBRD=ROUND(0.833333*64) =53
-	UART1_LCRH_R = (UART_LCRH_PEN | UART_LCRH_WLEN_8);			   // 1110000   ENABLE FIFO + DATA IS 8 BITS
-	UART1_CTL_R |= (UART_CTL_TXE | UART_CTL_RXE | UART_CTL_UARTEN); // enable RXE, TXE UART
-	GPIO_PORTB_AFSEL_R |= 0X03;
-	GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R & 0XFFFFFF00) + (GPIO_PCTL_PB0_U1RX | GPIO_PCTL_PB1_U1TX);
-	GPIO_PORTB_DEN_R |= 0X03;	 // enable digital on PB0,PB1
-	GPIO_PORTB_AMSEL_R &= ~0X03; // disable analog on PB0,PB1
+	while ((UART1_FR_R & UART_FR_TXFF) != 0); // while fifo is full>>dont write
+	UART1_DR_R = data; // we just want the 8 bits
 }
