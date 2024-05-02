@@ -1,3 +1,6 @@
+#include "TIVA_HEADERS.h"
+#include "LED.h"
+
 void turn_On_LED(unsigned char data) {
 	GPIO_PORTF_DATA_R |= data;
 }
@@ -22,4 +25,6 @@ void turn_Off_LED(unsigned char data){
 unsigned char getData_LED(void){
 	return GPIO_PORTF_DATA_R & LED_MASK;
 }
+
+
 
