@@ -1,5 +1,6 @@
 
 #include "TIVA_HEADERS.h"
+#include "UART.h"
 #include <string.h>
 
 void UART_Init_pc(void) // funtion for init uart0
