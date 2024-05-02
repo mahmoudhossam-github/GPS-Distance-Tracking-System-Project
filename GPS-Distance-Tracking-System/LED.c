@@ -14,3 +14,12 @@ void LED_Init(void) {
 	GPIO_PORTF_DIR_R |= LED_MASK; 											// Set LEDs to output
 	GPIO_PORTF_DATA_R &= ~LED_MASK; 										// Clear Data
 }
+
+void turn_Off_LED(unsigned char data){
+	GPIO_PORTF_DATA_R &= ~data;
+}
+
+unsigned char getData_LED(void){
+	return GPIO_PORTF_DATA_R & LED_MASK;
+}
+
