@@ -3,6 +3,7 @@
 #include "UART.h"
 #include <string.h>
 
+
 void UART_Init_pc(void) // funtion for init uart0
 {
 
@@ -21,15 +22,15 @@ void UART_Init_pc(void) // funtion for init uart0
 	GPIO_PORTA_AMSEL_R &= ~0X03; // disable analog on PA0,PA1
 }
 
-char UART_InChar_gps() // read uart data
+char UART_InChar_pc() // read uart data
 {
-	while ((UART1_FR_R & UART_FR_RXFE) != 0); // while fifo is empty>>dont read
-	return (char)UART1_DR_R;  // we just want the 8 bits
+	while ((UART0_FR_R & UART_FR_RXFE) != 0); // while fifo is empty>>dont read
+	return (char)(UART0_DR_R & 0xFF); // we just want the 8 bits
 }
 
-void UART_OutChar_gps(char data) // write uart data
+void UART_OutChar_pc(char data) // write uart data
 {
 
-	while ((UART1_FR_R & UART_FR_TXFF) != 0); // while fifo is full>>dont write
-	UART1_DR_R = data; // we just want the 8 bits
+	while ((UART0_FR_R & UART_FR_TXFF) != 0); // while fifo is full>>dont write
+	UART0_DR_R = data; // we just want the 8 bits
 }
