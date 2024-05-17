@@ -1,7 +1,8 @@
 #include "TIVA_HEADERS.h"
 #include "GPIO.h"
 
-void SW_Init(void){
+void SW_Init(void)
+{
 	GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
 	GPIO_PORTF_CR_R |= SW_ALL_MASK; //allow changes for port 1,2,3 for portf
 	GPIO_PORTF_AMSEL_R &= ~SW_ALL_MASK ;
