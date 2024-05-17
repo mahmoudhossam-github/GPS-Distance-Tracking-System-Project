@@ -293,7 +293,17 @@ UART_Init_gps();
 
 
 
-    }
+		}
+		while(1); // END OF OPERATION IN GPS MODE
+	}
+	
+	else if(mainflag == 2)
+	{
+	
+	idx = EEPROM_Read(DATA);
+	EEPROM_TO_PC(DATA,idx);
+	turn_On_LED(Green);
+	while(1);
 	}
 
 
