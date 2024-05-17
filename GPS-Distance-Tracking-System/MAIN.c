@@ -1,6 +1,5 @@
 #include "TIVA_HEADERS.h"
 #include "LED.h"
-#include "GPIO.h"
 #include "UART.h"
 #define M_PI 3.14159265358979323846
 //------------------------//
@@ -20,9 +19,7 @@ char GPS[80];
 //------------------------//
 //--- GPS_READ_FUNCTION---//
 //------------------------//
-char GPS_logName[] = "$GPGLL,"; 
-char GPS_COUNTER;
-char GPS[80];   
+
 
 
 void GPS_READ(void)  //we will use GPGLL
@@ -58,6 +55,60 @@ do{
 } while(RECIEVED_CHAR!='*'); 
 
 }
+//----------------------------------------//
+//--- GPS FORMAT function  ---//
+//---------------------------------------//
+
+void GPS_format(void)
+{
+	int j;
+	int i ;
+	int noOfTokenStrings;
+	noOfTokenStrings=0;
+	
+
+   for (i = 0; i < 10; i++) {
+            for (j = 0; j < 22; j++) {
+            GPS_formated[i][j] = '\0'; // Reset each character to null terminator
+        }
+    }
+	//GPS  3003.91117,N,3116.71060,E,085049.00,A,A*
+	token=strtok(GPS,","); //token pointer is now pointing at first element
+
+	do 
+	{
+		strcpy(GPS_formated[noOfTokenStrings],token);	
+		token=strtok(NULL,",");
+		noOfTokenStrings++;
+	}while(token!=NULL);   // Now GPS_formated array has {' 3003.91117','N','3116.71060','E','085049.00','A','A*'}*/
+	
+	if(noOfTokenStrings==7)  //when we finish recieving all characters before '*' 
+	 
+	{
+		if(strcmp(GPS_formated[5],"A")==0)   // check that the LOG is VALID 
+
+		{
+			flagco=1;//flag that I have new valid coordinates
+            pointscount++;//this counter is incremented when I recieve valid coordinated     
+
+
+			previouslat=currentlat;
+       		previouslong=currentlong;
+			
+			currentlat=((atof(GPS_formated[0]))/100); //1st location in recieved Log
+			currentlong=((atof(GPS_formated[2]))/100); //3rd location in recieved Log
+              //all Egypt lies on North and East
+            strcat(xycoo,GPS_formated[0]);// lat 
+            strcat(xycoo,",");//lat, 	
+            strcat(xycoo,GPS_formated[2]); //lat,long
+            strcat(xycoo," "); //lat,longspace
+	
+		}
+	}
+		
+}
+
+
 
 //----------------------------------------//
 //--- CONVERT_T0_DEGREE_ANGLE_FUNTION  ---//
@@ -78,6 +129,30 @@ float convert_to_rad_angle(float angle)
  
     return angle * M_PI / 180; 
 }
+//------------------------------------//
+//--- distance_FUNCTION ---//
+//------------------------------------//
+float GPS_getDistance(float clong, float clat, float dlong, float dlat) 
+{
+
+    float currentLongRad = convert_to_rad_angle(convert_to_degree_angle(clong)); 
+    float currentLatRad = convert_to_rad_angle(convert_to_degree_angle(clat)); 
+    float destLongRad = convert_to_rad_angle(convert_to_degree_angle(dlong)); 
+    float destLatRad = convert_to_rad_angle(convert_to_degree_angle(dlat)); 
+    // Get Difference 
+    float longDiff = destLongRad - currentLongRad; 
+    float latDiff = destLatRad - currentLatRad; 
+    // calculate distance 
+    float a = pow(sin(latDiff / 2), 2) + cos(currentLatRad) * cos(destLatRad) * pow(sin(longDiff / 2), 2); 
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a)); 
+    
+    return Earth_Radius * c; 
+
+}
+
+
+
+
 
 
 
@@ -85,31 +160,73 @@ float convert_to_rad_angle(float angle)
 //----------------------------- Main Code ------------------------------//
 //----------------------------------------------------------------------//
 int main(){
-	
+    previouslat=0; 
+	previouslong=0; 
+	currentlat=0; 
+	currentlong=0; 
+	total_distance=0; 
+	pointscount=0; 
+	memset(xycoo, '\0', sizeof(xycoo));  //make sure that xy is reset every time 
+	flagco=0;
+
 	LED_Init();
 	SW_Init();
 	SysTick_Init();
 	UART_Init_pc();
+
+
+   
 	
 	while(1){
-		
-		LED_current = getData_LED();
-		button_in1 = SW1_Input();
-
-		if(button_in1==0 && button_prev1 != 0){ // If button is pressed (Falling Edge)
+        memset(xycoo, '\0', sizeof(xycoo));  
 			
-			if ((LED_current & Green) == 0) turn_On_LED(Green); 
-			else turn_Off_LED(Green);
-		}
-		
-		else {	// Button is not pressed
-			if (distance > 100) turn_On_LED(Blue);
-			else turn_Off_LED(Blue);
-		} 		 
-		
-		button_prev1 = button_in1; // For falling edge condition on	SW1
-		
-		SysTick_Delay10ms(); // Delay to avoid runtime problems.
-	}
+			GPS_READ();
+			turn_On_LED(Blue);
+			Delay_in_seconds(1);
+			
+			GPS_format();
+			LED_Reset(); 
+			turn_On_LED(Blue);
+			turn_On_LED(Green);
+			LED_Reset();
+            
+            	
+			if ((pointscount>=2) && (flagco==1)) 
+				//make sure I have 2 valid points at least and that I am not calculating distance on same 2 points again
+			{
+							
+				total_distance+=GPS_getDistance(previouslong,previouslat,currentlong,currentlat);   
+				LED_Reset();
+				turn_On_LED(Red);
+				SysTick_Delay10ms();
+				SysTick_Delay10ms();
+				LED_Reset();			
+			}
+
+            flagco=0;	//to prevent adding same distance to itself if no new coordinates came
+            SysTick_Delay10ms();
+			SysTick_Delay10ms();
+
+
+            if((SW1_ON()) || total_distance>=100) 
+			// if switch 1 is pressed or total distance exceededd 100 meters
+			{				
+				turn_On_LED(Green);
+				turn_On_LED(Red);
+				Delay_in_seconds(1);
+				LED_Reset();
+				break;
+			}
+
+
+            LED_Reset();
+			turn_On_LED(Green);
+			Delay_in_seconds(1);
+			LED_Reset();
+
+
+
+
+    }	
 	
 }
