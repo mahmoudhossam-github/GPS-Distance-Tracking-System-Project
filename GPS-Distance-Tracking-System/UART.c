@@ -1,4 +1,3 @@
-
 #include "TIVA_HEADERS.h"
 #include "UART.h"
 #include <string.h>
@@ -45,7 +44,7 @@ void UART_Init_gps(void)
 
 	UART1_CTL_R &= ~UART_CTL_UARTEN; // disable uart1
 
-	UART1_IBRD_R = 0X68;										   // IBRD=INT(16*10^6/(9600*16)) =104 
+	UART1_IBRD_R = 0X68;										   // IBRD=INT(16*10^6/(9600*16)) =104
 	UART1_FBRD_R = 0X0B;										   // FBRD=ROUND(0.166666*64) =11
 	UART1_LCRH_R = (UART_LCRH_PEN | UART_LCRH_WLEN_8);			   // 1110000   ENABLE FIFO + DATA IS 8 BITS
 	UART1_CTL_R |= (UART_CTL_TXE | UART_CTL_RXE | UART_CTL_UARTEN); // enable RXE, TXE UART
