@@ -11,15 +11,26 @@
 //------------------------//
 //--- Global Variables ---//
 //------------------------//
-
+const double Earth_Radius = 6371000; // 6,357 MIN //  6,378 MAX 
 unsigned char button_in1;	// Variable to receive input from SW1
 unsigned char button_in2; // Variable to receive input from SW2
 unsigned char button_prev1 = 0; // Used for FALLING EDGE Condition of SW1
-unsigned int distance = 50 ; // Distance variable
 unsigned char LED_current; // Variable to get current LED data
-char GPS_logName[] = "$GPGLL,"; 
+float previouslat=0;
+float previouslong=0;
+float currentlat=0;
+float currentlong=0;
+float total_distance=0;
 char GPS_COUNTER;
-char GPS[80];   
+char GPS[80];   //Array to store readings from GPS 
+char GPS_logName[] = "$GPGLL,"; //Array to make sure we are reading the correct sentence
+char GPS_formated[10][22]; 
+char xycoo[23];  // variable to store latitude and longitude 
+char * token; 
+char pointscount=0;//indicate how many cooredinates we have recieved ( make sure not to calc distance before 2 cooredinates at least )
+char flagco=0;//indicate if new coordinates came 
+
+ // sentence is  $GPGLL,3003.91117,N,03116.71060,E,085049.00,A,A*75
 
 
 //------------------------//
@@ -56,7 +67,7 @@ do{
      
     RECIEVED_CHAR=UART_InChar_gps(); 
      
-    GPS[GPS_COUNTER++]=RECIEVED_CHAR;  //now we have a char array called GPS  29.9756000,N,31.2372000,E,182908.00,A,A*
+    GPS[GPS_COUNTER++]=RECIEVED_CHAR;  
 	
 } while(RECIEVED_CHAR!='*'); 
 
@@ -78,7 +89,7 @@ void GPS_format(void)
             GPS_formated[i][j] = '\0'; // Reset each character to null terminator
         }
     }
-	//GPS  3003.91117,N,3116.71060,E,085049.00,A,A*
+	//GPS  3003.91117,N,03116.71060,E,085049.00,A,A*
 	token=strtok(GPS,","); //token pointer is now pointing at first element
 
 	do 
@@ -86,7 +97,7 @@ void GPS_format(void)
 		strcpy(GPS_formated[noOfTokenStrings],token);	
 		token=strtok(NULL,",");
 		noOfTokenStrings++;
-	}while(token!=NULL);   // Now GPS_formated array has {' 3003.91117','N','3116.71060','E','085049.00','A','A*'}*/
+	}while(token!=NULL);   // Now GPS_formated array has {' 3003.91117','N','03116.71060','E','085049.00','A','A*'}*/
 	
 	if(noOfTokenStrings==7)  //when we finish recieving all characters before '*' 
 	 
@@ -234,5 +245,6 @@ int main(){
 
 
     }	
+
 	
 }
