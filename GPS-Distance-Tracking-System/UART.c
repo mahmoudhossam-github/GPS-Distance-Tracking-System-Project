@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-#include "TIVA_HEADERS.h"
-=======
+
 #include "TIVA_HEADERS.h" 
->>>>>>> 39d68ec9c305590f034844bf4a4837abe6f7a5d4
 #include "UART.h"
 #include <string.h>
 
@@ -11,13 +8,8 @@ void UART_Init_pc(void) // funtion for init uart0
 {
 	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R0; // activate uart 0
 	while((SYSCTL_PRUART_R & SYSCTL_PRUART_R0==0)){};//delay uart0
-   
-
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0; // activate port A
 	while((SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R0)==0){};//delay port A
-
-	
-
 	UART0_CTL_R &= ~UART_CTL_UARTEN; // disable uart0
 	UART0_IBRD_R = 0X68;											// IBRD=INT(16*10^6/(9600*16)) =104
 	UART0_FBRD_R = 0X0B;											// FBRD=ROUND(0.166666*64) =11
@@ -45,22 +37,6 @@ void UART_OutChar_pc(char data) // write uart data
 
 void UART_Init_gps(void)// for portd uart 2
 {
-<<<<<<< HEAD
-
-	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1; // activate uart 1 //? port B
-	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // activate port B
-
-	UART1_CTL_R &= ~UART_CTL_UARTEN; // disable uart1
-
-	UART1_IBRD_R = 0X68;										   // IBRD=INT(16*10^6/(9600*16)) =104
-	UART1_FBRD_R = 0X0B;										   // FBRD=ROUND(0.166666*64) =11
-	UART1_LCRH_R = (UART_LCRH_PEN | UART_LCRH_WLEN_8);			   // 1110000   ENABLE FIFO + DATA IS 8 BITS
-	UART1_CTL_R |= (UART_CTL_TXE | UART_CTL_RXE | UART_CTL_UARTEN); // enable RXE, TXE UART
-	GPIO_PORTB_AFSEL_R |= 0X03;
-	GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R & 0XFFFFFF00) + (GPIO_PCTL_PB0_U1RX | GPIO_PCTL_PB1_U1TX);
-	GPIO_PORTB_DEN_R |= 0X03;	 // enable digital on PB0,PB1
-	GPIO_PORTB_AMSEL_R &= ~0X03; // disable analog on PB0,PB1
-=======
 	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R2; // activate uart 2 
     while(SYSCTL_PRUART_R & SYSCTL_PRUART_R2==0);//delay uart2
     SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R3; // activate port D
@@ -76,7 +52,7 @@ void UART_Init_gps(void)// for portd uart 2
     GPIO_PORTD_PCTL_R = (GPIO_PORTD_PCTL_R & 0x00FFFFFF) + (GPIO_PCTL_PD6_U2RX | GPIO_PCTL_PD7_U2TX); // Select UART alternate functions for PD6 and PD7
     GPIO_PORTD_DEN_R |= ((1 << 6) | (1 << 7)); // Enable digital I/O on PD6 and PD7
     GPIO_PORTD_AMSEL_R &= ~((1 << 6) | (1 << 7)); // Disable analog functionality on PD6 and PD7
->>>>>>> 39d68ec9c305590f034844bf4a4837abe6f7a5d4
+
 }
 
 
