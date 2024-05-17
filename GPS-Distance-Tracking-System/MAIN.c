@@ -112,8 +112,8 @@ void GPS_format(void)
 			previouslat=currentlat;
        		previouslong=currentlong;
 
-			currentlat=((atof(GPS_formated[0]))/100); //1st location in recieved Log
-			currentlong=((atof(GPS_formated[2]))/100); //3rd location in recieved Log
+			currentlat=(atof(GPS_formated[0])); //1st location in recieved Log
+			currentlong=(atof(GPS_formated[2])); //3rd location in recieved Log
               //all Egypt lies on North and East
             strcat(xycoo,GPS_formated[0]);// lat
             strcat(xycoo,",");//lat,
@@ -177,6 +177,16 @@ float GPS_getDistance(float clong, float clat, float dlong, float dlat)
 //----------------------------- Main Code ------------------------------//
 //----------------------------------------------------------------------//
 int main(){
+	
+	unsigned char i;
+	unsigned int idx;
+	unsigned char INIT_OK;
+	int k;
+	int kk = 0;
+	char test[4] = {0};
+	unsigned char mainflag = 0;
+	unsigned char flagg = 0;
+	
     previouslat=0;
 	previouslong=0;
 	currentlat=0;

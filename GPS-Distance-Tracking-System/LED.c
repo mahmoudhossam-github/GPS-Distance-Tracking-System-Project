@@ -44,6 +44,7 @@ void LED_Wait(void)
 {
 	GPIO_PORTF_DATA_R |= (Red | Green);
 }
+
 unsigned char getData_LED(void)
 {
 	return GPIO_PORTF_DATA_R & LED_MASK;
