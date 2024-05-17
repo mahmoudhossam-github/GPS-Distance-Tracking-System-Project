@@ -1,6 +1,12 @@
 #include "TIVA_HEADERS.h"
+#include "UART.h" 
 #include "LED.h"
-#include "UART.h"
+#include "EEPROM.h"
+#include <math.h> 
+#include <stdio.h> 
+#include <string.h>
+#include <stdlib.h>
+
 #define M_PI 3.14159265358979323846
 //------------------------//
 //--- Global Variables ---//
